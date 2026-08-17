@@ -71,7 +71,7 @@ Ghostscript (saat fitur compress diaktifkan)
 
 ## Instalasi — Pengguna Akhir
 
-Installer tersedia melalui `scripts\installer.iss`; hasil lokal berada di `scripts\dist\installer\PDFSafeTools-Setup.exe`. Build folder berada di `dist\PDFSafeTools\PDFSafeTools.exe`. Python tidak diperlukan pada mesin pengguna. Ghostscript harus dipasang terpisah jika compression digunakan.
+Installer Windows tersedia di halaman [Releases](https://github.com/yahya06/pdf-safetools/releases). Pilih release terbaru, unduh `PDFSafeTools-Setup.exe`, lalu jalankan installer. Python dan Git tidak diperlukan pada mesin pengguna. Ghostscript harus dipasang terpisah jika fitur compression digunakan.
 
 ---
 
@@ -108,6 +108,34 @@ pip install -r requirements-dev.txt
 ```powershell
 python -m app.main
 ```
+
+### 5. Update source code
+
+Jika repository sudah pernah di-clone:
+
+```powershell
+git checkout main
+git pull origin main
+```
+
+Jika ingin mengambil versi terbaru dari awal:
+
+```powershell
+git clone https://github.com/yahya06/pdf-safetools.git
+cd pdf-safetools
+```
+
+Setelah update dependency atau berpindah branch, jalankan kembali:
+
+```powershell
+.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+pip install -r requirements-dev.txt
+```
+
+### Mendapatkan installer terbaru
+
+Installer tidak disimpan di repository karena ukurannya besar. Unduh installer dari halaman [Releases](https://github.com/yahya06/pdf-safetools/releases). Folder `build\`, `dist\`, dan `scripts\dist\` adalah artefak lokal dan diabaikan oleh Git.
 
 ---
 
@@ -248,7 +276,13 @@ PyInstaller build tersedia melalui `scripts/build.py`:
 .venv\Scripts\python.exe scripts\build.py --clean
 ```
 
-Output berada di `dist\PDFSafeTools\PDFSafeTools.exe`. Installer belum tersedia; Ghostscript tetap harus dipasang terpisah untuk fitur compression.
+Output berada di `dist\PDFSafeTools\PDFSafeTools.exe`. Untuk membuat installer Inno Setup, pastikan Inno Setup terpasang dan compiler `iscc` tersedia di `PATH`, lalu jalankan:
+
+```powershell
+.venv\Scripts\python.exe scripts\build.py --clean --installer
+```
+
+Installer dibuat di `scripts\dist\installer\PDFSafeTools-Setup.exe`. Jangan commit hasil build; unggah installer ke halaman GitHub Releases. Ghostscript tetap harus dipasang terpisah untuk fitur compression.
 
 ---
 
