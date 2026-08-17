@@ -71,7 +71,7 @@ Ghostscript (saat fitur compress diaktifkan)
 
 ## Instalasi — Pengguna Akhir
 
-Installer belum tersedia. Jalankan build folder dari `dist\PDFSafeTools\PDFSafeTools.exe`; Python tidak diperlukan pada mesin pengguna. Ghostscript harus dipasang terpisah jika compression digunakan.
+Installer tersedia melalui `scripts\installer.iss`; hasil lokal berada di `scripts\dist\installer\PDFSafeTools-Setup.exe`. Build folder berada di `dist\PDFSafeTools\PDFSafeTools.exe`. Python tidak diperlukan pada mesin pengguna. Ghostscript harus dipasang terpisah jika compression digunakan.
 
 ---
 

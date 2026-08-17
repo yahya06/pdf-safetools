@@ -21,6 +21,7 @@ def main() -> int:
         "--clean", action="store_true", help="Remove build artifacts before building"
     )
     parser.add_argument("--onefile", action="store_true", help="Build single-file executable")
+    parser.add_argument("--installer", action="store_true", help="Build Inno Setup installer")
     args = parser.parse_args()
 
     project_root = Path(__file__).resolve().parent.parent
@@ -35,13 +36,22 @@ def main() -> int:
     if not spec_file.exists():
         generate_spec(project_root, spec_file)
 
-    cmd = ["pyinstaller", "--noconfirm"]
+    cmd = [sys.executable, "-m", "PyInstaller", "--noconfirm"]
     if args.onefile:
         cmd.append("--onefile")
     cmd.append(str(spec_file))
 
     result = subprocess.run(cmd, cwd=project_root)
-    return result.returncode
+    if result.returncode != 0 or not args.installer:
+        return result.returncode
+
+    compiler = shutil.which("iscc")
+    if compiler is None:
+        print("Inno Setup compiler 'iscc' was not found.", file=sys.stderr)
+        return 2
+    return subprocess.run(
+        [compiler, str(project_root / "scripts" / "installer.iss")], cwd=project_root
+    ).returncode
 
 
 def generate_spec(project_root: Path, spec_file: Path) -> None:
