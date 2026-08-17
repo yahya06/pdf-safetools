@@ -5,6 +5,9 @@ class SettingsPage(QWidget):
     def __init__(self) -> None:
         super().__init__()
         layout = QVBoxLayout(self)
-        layout.addWidget(QLabel("Settings"))
+        layout.setContentsMargins(20, 20, 20, 20)
+        title = QLabel("Settings")
+        title.setObjectName("page-title")
+        layout.addWidget(title)
         layout.addWidget(QLabel("Configuration options will be available here."))
         layout.addStretch()

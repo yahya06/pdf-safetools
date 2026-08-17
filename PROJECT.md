@@ -1239,6 +1239,44 @@ System
 
 Gunakan Qt stylesheet.
 
+## 49.1 Visual Direction
+
+Gaya utama adalah profesional tenang dengan warna navy dan teal, sesuai konteks
+pengolahan dokumen medis lokal. Antarmuka harus memprioritaskan keterbacaan,
+hierarki informasi, dan kemudahan operasi.
+
+### Palet
+
+```text
+Application background: #F2F6F9
+Surface:                #FFFFFF
+Primary navy:           #22394A
+Primary text:           #1B2A38
+Secondary text:         #61717E
+Teal action:            #168C8C
+Teal hover:             #1B9E9E
+Teal soft surface:      #E6F4F4
+Border:                 #D8E2E8
+Warning:                #D99A2B
+```
+
+### Layout
+
+- Sidebar navy melekat penuh pada sisi kiri jendela.
+- Item navigasi aktif menggunakan teal dan memiliki fokus keyboard yang jelas.
+- Area konten menggunakan latar terang dengan ruang kosong yang cukup.
+- Halaman menggunakan judul, deskripsi singkat, lalu kontrol utama.
+- Tombol tindakan utama menggunakan teal; tindakan sekunder tetap netral.
+- Panel informasi lokal menegaskan bahwa PDF diproses di perangkat pengguna,
+  tanpa cloud dan tanpa unggah dokumen.
+
+### Typography
+
+- Gunakan Segoe UI sebagai font utama Windows.
+- Ukuran dasar harus nyaman dibaca pada desktop.
+- Judul halaman lebih tegas daripada teks pendukung.
+- Hindari teks dekoratif, kontras rendah, dan kepadatan kontrol berlebihan.
+
 ---
 
 # 50. About
