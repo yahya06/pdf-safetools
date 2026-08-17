@@ -1383,7 +1383,7 @@ External link yang digunakan pada versi awal:
 | Link | URL | Status |
 |---|---|---|
 | Developer GitHub | https://github.com/yahya06 | Aktif |
-| Project Repository | - | Belum dibuat |
+| Project Repository | https://github.com/yahya06/pdf-safetools.git | Aktif |
 | Documentation | - | Belum dibuat |
 | Security Policy | - | Akan tersedia di repository |
 
@@ -1990,6 +1990,12 @@ GitHub Profile:
 https://github.com/yahya06
 ```
 
+Repository:
+
+```text
+https://github.com/yahya06/pdf-safetools.git
+```
+
 Hindari nama repository:
 
 ```text
@@ -2406,8 +2412,8 @@ dan dapat diaudit secara teknis**.
 | Application | PDF SafeTools |
 | Developer | Yahya |
 | GitHub Profile | https://github.com/yahya06 |
-| Planned Repository | pdf-safetools |
-| Repository Status | Belum dibuat |
+| Repository | https://github.com/yahya06/pdf-safetools.git |
+| Repository Status | Aktif |
 | Project Origin | RSUD Bantarangin Ponorogo |
 | Location | Ponorogo, Jawa Timur, Indonesia |
 | Platform | Windows Desktop |

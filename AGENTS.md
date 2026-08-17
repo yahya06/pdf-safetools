@@ -2,79 +2,78 @@
 
 ## What is this
 
-Windows desktop app for PDF merge/split/compress/scan/sanitize. Python 3.12+ / PySide6 / pikepdf / PyMuPDF / Ghostscript. No server, no cloud, no browser, no Docker.
+Windows desktop app for local PDF merge/split/compress/scan/sanitize. Python 3.12+ / PySide6. No server, no cloud, no browser, no Docker.
 
-## Read before working
+`PROJECT.md` is the authoritative spec. Read the relevant sections before any task.
 
-`PROJECT.md` is the authoritative spec (~2500 lines). Every architectural decision, security rule, and feature scope is there. Read the relevant sections before any task.
+Repo: https://github.com/yahya06/pdf-safetools.git
 
-## Hard rules — do not violate
+## Current state (Phase 1 done)
 
-- **Never upload or send PDFs externally.** All processing is local. No cloud, no API calls, no AI services.
-- **Never overwrite original files.** Output goes to `_clean`, `_compressed`, etc.
-- **Never use `os.system()` or `subprocess.run(..., shell=True)` with user data.** Always use argument lists.
-- **Never log PDF content, patient data, or passwords.**
-- **Never run JavaScript or PDF actions during scanning.** Scanner is static analysis only.
-- **Never add Laravel/PHP/React/Electron/Docker/WSL/browser dependencies.** Tech stack is fixed: Python + PySide6 + pikepdf + PyMuPDF + Ghostscript.
-- **Never commit patient data, real hospital documents, credentials, or production logs.**
+GUI shell only: Dashboard, Settings placeholder, About. No PDF processing yet.
 
-## Sanitizer gotchas
+Installed runtime dep is **PySide6 only**. pikepdf / PyMuPDF / Ghostscript are specified for later phases — do not add them until that phase.
 
-- Do NOT just search for `http://` / `https://` / `www.` and delete them. Text URLs on a page are not dangerous.
-- Sanitizer must target PDF objects/actions: `/URI`, `/Launch`, `/GoToR`, `/GoToE`, `/SubmitForm`, `/ImportData`, `/EmbeddedFiles`, `/RichMedia`, `/Movie`, `/Sound`, `/3D`.
-- Every sanitization must be followed by re-scan: Scan → Sanitize → Save → Re-scan → Report.
-- Severity levels: `INFO`, `LOW`, `MEDIUM`, `HIGH`, `CRITICAL`. Risk levels: `SAFE`, `LOW`, `MEDIUM`, `HIGH`, `CRITICAL`.
-- "SAFE" is an application status only — never claim it means "free of malware". Use "No configured findings detected" instead.
+Do not implement the sanitizer, scanner, or other PDF tools until their phase. Phase order in `PROJECT.md` §65 / §78.
 
-## Security context
+## Hard rules
 
-PDFs may contain health/medical data. Treat every PDF as sensitive data by default.
+- Never upload or send PDFs externally. All processing is local.
+- Never overwrite original files. Output suffixes: `_clean`, `_compressed`. Merge output: `merged.pdf`.
+- Never `os.system()` or `subprocess.run(..., shell=True)` with user data. Argument lists only.
+- Never log PDF content, patient data, or passwords.
+- Never execute JavaScript or PDF actions. Scanner is static analysis only.
+- Never add Laravel / PHP / React / Electron / Docker / WSL / browser deps. Stack is Python + PySide6 + pikepdf + PyMuPDF + Ghostscript.
+- Never commit patient data, real hospital documents, credentials, or production logs.
+
+## Sanitizer (when you reach that phase)
+
+- Do **not** search-and-delete `http://` / `https://` / `www.` — printed text URLs are not dangerous.
+- Target PDF objects/actions: `/URI`, `/Launch`, `/GoToR`, `/GoToE`, `/SubmitForm`, `/ImportData`, `/EmbeddedFiles`, `/RichMedia`, `/Movie`, `/Sound`, `/3D`.
+- Required flow: Scan → Sanitize → Save → Re-scan → Report.
+- Severity: `INFO` `LOW` `MEDIUM` `HIGH` `CRITICAL`. Risk: `SAFE` `LOW` `MEDIUM` `HIGH` `CRITICAL`.
+- `SAFE` is an app status only. Never claim "free of malware". Say "No configured findings detected".
+
+Treat every PDF as sensitive health data by default.
 
 ## Commands
 
 ```powershell
 python -m venv .venv
 .venv\Scripts\Activate.ps1
-pip install -r requirements.txt        # runtime deps
-pip install -r requirements-dev.txt    # dev/test deps
+pip install -r requirements.txt        # runtime
+pip install -r requirements-dev.txt    # includes runtime + ruff/mypy/pytest
 python -m app.main                     # run app
-pytest                                 # tests
-ruff check .                           # lint
-ruff format .                          # format
-mypy app/                              # type check
+ruff check .
+ruff format .
+mypy app/
+pytest
 ```
 
-## Project structure (key boundaries)
+Verify in that order. `pyproject.toml` sets `tool.pytest.ini_options.pythonpath = ["."]` — without it, pytest cannot import `app`.
+
+Ruff: line-length 100, rules E/F/I. Mypy: `strict = true`.
+
+## Layout that exists
 
 ```
-app/main.py          — entrypoint (python -m app.main)
-app/ui/              — PySide6 GUI (main_window, sidebar nav, pages)
-app/services/        — business logic (merge, split, compress, organize, render, scanner, sanitizer)
-app/security/        — scanner + sanitizer engine (scanner.py, sanitizer.py, rules.py, findings.py)
-app/models/          — data models (scan_result, sanitize_result, pdf_info)
-app/workers/         — QThread/QRunnable workers for non-blocking ops
-app/utils/           — file, hash, logging, system utilities
-app/config/settings.py — centralized config + APP_INFO dict
-sample_pdfs/         — test fixtures by threat type (safe, javascript, external_uri, open_action, etc.)
-tests/               — pytest + pytest-qt
-scripts/             — build.py, package.py (PyInstaller packaging)
+app/main.py              entrypoint
+app/ui/                  MainWindow + sidebar (QListWidget + QStackedWidget)
+                         pages: dashboard, settings_page, about_page
+app/config/settings.py   APP_INFO + APP_DATA_DIR / LOG_DIR / TEMP_DIR
+app/utils/logging_utils.py   rotating log to %LOCALAPPDATA%\PDFSafeTools\logs
+tests/test_foundation.py
 ```
 
-## Conventions
+Planned later (do not create empty stubs): `app/services/`, `app/security/`, `app/models/`, `app/workers/`, `sample_pdfs/`, `scripts/`.
 
-- PDF validation: check extension + `%PDF-` signature + pikepdf parse, not just extension.
-- Output naming: `original_clean.pdf`, `original_compressed.pdf`, `merged.pdf`.
-- Temp files: `%LOCALAPPDATA%\PDFSafeTools\temp` — clean after use.
-- App data: `%LOCALAPPDATA%\PDFSafeTools\` (logs, temp, output, config, cache). Never in `C:\Program Files\`.
-- UI: sidebar navigation, Qt stylesheet themes (Light/Dark/System).
-- Logging: rotating log, levels INFO/WARNING/ERROR only. No PDF content in logs.
-- Thread long operations (QThread/QRunnable). Never freeze UI. Show real progress only.
-- Developer info centralized in `APP_INFO` dict in `app/config/settings.py`. Do not scatter across files.
-- `repository` field in APP_INFO is currently `None` — UI must hide the Project Repository button when `None`.
+## Conventions agents miss
 
-## Testing
-
-- Framework: pytest + pytest-qt.
-- Test fixtures: `sample_pdfs/` directories by threat category (safe, javascript, external_uri, open_action, launch, embedded, annotation, multimedia, encrypted, malformed).
-- Every security bug must become a regression test with a fixture.
-- Test files: `tests/test_merge.py`, `test_split.py`, `test_compress.py`, `test_scanner.py`, `test_sanitizer.py`.
+- Developer/origin strings live only in `APP_INFO` (`app/config/settings.py`). Do not scatter them.
+- `APP_INFO["repository"]` is still `None` in code. Hide any Project Repository button while it is `None`. `tests/test_foundation.py` asserts this. PROJECT.md already lists the GitHub URL — update `APP_INFO` and that test together, not one without the other.
+- App data: `%LOCALAPPDATA%\PDFSafeTools\` (logs, temp, output, config, cache). Never `C:\Program Files\`.
+- PDF validation (when added): extension + `%PDF-` signature + pikepdf parse. Not extension alone.
+- Long work goes on QThread/QRunnable. No fake progress bars.
+- Logging levels: INFO / WARNING / ERROR only.
+- Sample PDFs (when added) go under `sample_pdfs/<threat>/`. Synthetic fixtures only — no real hospital files, no live malware.
+- Every security bug becomes a regression test with a fixture.
