@@ -1,2 +1,6 @@
 AGENTS.md
 PROJECT.md
+
+build/
+dist/
+scripts/dist/
