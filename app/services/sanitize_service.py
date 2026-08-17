@@ -12,10 +12,34 @@ Preset = Literal["Standard", "JKN Safe Mode", "Custom"]
 STANDARD_RULES = frozenset({"javascript", "open_action", "external_uri", "launch", "embedded_file"})
 JKN_RULES = frozenset(
     {
-        "javascript", "open_action", "additional_actions", "external_uri", "launch",
-        "goto_remote", "goto_embedded", "submit_form", "import_data", "embedded_file",
-        "rich_media", "movie", "sound", "3d", "external_annotation",
+        "javascript",
+        "open_action",
+        "additional_actions",
+        "external_uri",
+        "launch",
+        "goto_remote",
+        "goto_embedded",
+        "submit_form",
+        "import_data",
+        "embedded_file",
+        "rich_media",
+        "movie",
+        "sound",
+        "3d",
+        "external_annotation",
+        "metadata",
     }
+)
+
+METADATA_KEYS = (
+    "/Author",
+    "/Creator",
+    "/Producer",
+    "/Title",
+    "/Subject",
+    "/Keywords",
+    "/CreationDate",
+    "/ModDate",
 )
 
 
@@ -41,6 +65,8 @@ def sanitize_pdf(
     removed = {rule: 0 for rule in selected}
     with pikepdf.Pdf.open(source) as pdf:
         _sanitize_dictionary(pdf.Root, selected, removed)
+        if "metadata" in selected:
+            _clean_metadata(pdf, removed)
         for page in pdf.pages:
             if "/Annots" in page:
                 existing: Any = page.Annots
@@ -69,17 +95,30 @@ def sanitize_pdf(
 
 def _rules_for(preset: Preset, rules: frozenset[str] | set[str] | None) -> frozenset[str]:
     if preset == "Standard":
-        return STANDARD_RULES
+        return STANDARD_RULES | (
+            frozenset({"metadata"}) if rules and "metadata" in rules else frozenset()
+        )
     if preset == "JKN Safe Mode":
-        return JKN_RULES
+        return JKN_RULES | (
+            frozenset({"metadata"}) if rules and "metadata" in rules else frozenset()
+        )
     if preset == "Custom" and rules is not None:
         return frozenset(rules)
     raise ValueError("Custom sanitization requires rules")
 
 
-def _sanitize_dictionary(
-    value: Any, rules: frozenset[str], removed: dict[str, int]
-) -> None:
+def _clean_metadata(pdf: pikepdf.Pdf, removed: dict[str, int]) -> None:
+    info: Any = pdf.docinfo
+    for key in METADATA_KEYS:
+        if key in info:
+            del info[key]
+            removed["metadata"] += 1
+    if "/Metadata" in pdf.Root:
+        del pdf.Root["/Metadata"]
+        removed["metadata"] += 1
+
+
+def _sanitize_dictionary(value: Any, rules: frozenset[str], removed: dict[str, int]) -> None:
     keys = {"/OpenAction": "open_action", "/AA": "additional_actions"}
     for key, rule in keys.items():
         if rule in rules and key in value:
@@ -105,12 +144,19 @@ def _remove_annotation(annotation: Any, rules: frozenset[str], removed: dict[str
     action: Any = node.get("/A")
     action_type = str(action.get("/S", "")) if action is not None else ""
     rule = {
-        "/JavaScript": "javascript", "/URI": "external_uri", "/Launch": "launch",
-        "/GoToR": "goto_remote", "/GoToE": "goto_embedded", "/SubmitForm": "submit_form",
+        "/JavaScript": "javascript",
+        "/URI": "external_uri",
+        "/Launch": "launch",
+        "/GoToR": "goto_remote",
+        "/GoToE": "goto_embedded",
+        "/SubmitForm": "submit_form",
         "/ImportData": "import_data",
     }.get(action_type)
     subtype_rule = {
-        "/RichMedia": "rich_media", "/Movie": "movie", "/Sound": "sound", "/3D": "3d",
+        "/RichMedia": "rich_media",
+        "/Movie": "movie",
+        "/Sound": "sound",
+        "/3D": "3d",
     }.get(str(node.get("/Subtype", "")))
     target = subtype_rule or rule
     if target and target in rules:

@@ -71,19 +71,7 @@ Ghostscript (saat fitur compress diaktifkan)
 
 ## Instalasi — Pengguna Akhir
 
-### Opsi 1: Installer
-
-1. Unduh `PDFSafeTools-Setup.exe` dari [halaman Releases](https://github.com/yahya06/pdf-safetools/releases).
-2. Jalankan installer.
-3. Buka PDF SafeTools dari Start Menu.
-
-### Opsi 2: Portable
-
-1. Unduh `PDFSafeTools-Portable.zip` dari [halaman Releases](https://github.com/yahya06/pdf-safetools/releases).
-2. Ekstrak ke folder mana pun.
-3. Jalankan `PDFSafeTools.exe`.
-
-Versi portable tidak memerlukan Python terinstall.
+Installer belum tersedia. Jalankan build folder dari `dist\PDFSafeTools\PDFSafeTools.exe`; Python tidak diperlukan pada mesin pengguna. Ghostscript harus dipasang terpisah jika compression digunakan.
 
 ---
 
@@ -254,19 +242,19 @@ pytest
 
 ### Build executable
 
+PyInstaller build tersedia melalui `scripts/build.py`:
+
 ```powershell
-python scripts/build.py
+.venv\Scripts\python.exe scripts\build.py --clean
 ```
 
-Output: `PDFSafeTools.exe`
+Output berada di `dist\PDFSafeTools\PDFSafeTools.exe`. Installer belum tersedia; Ghostscript tetap harus dipasang terpisah untuk fitur compression.
 
 ---
 
 ## Kontribusi
 
-Kontribusi diterima. Sebelum membuat pull request:
-
-1. Baca `CONTRIBUTING.md` (jika sudah tersedia).
+Kontribusi diterima. Lihat `CONTRIBUTING.md` untuk panduan kontribusi (akan ditambahkan).
 2. Jalankan test, lint, dan type check.
 3. Jangan commit data pasien, dokumen rumah sakit, credential, atau production log.
 4. Untuk fixture PDF, gunakan PDF sintetis — bukan dokumen nyata.

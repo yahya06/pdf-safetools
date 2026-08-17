@@ -1,5 +1,7 @@
 import sys
+from pathlib import Path
 
+from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QApplication
 
 from app.ui.main_window import MainWindow
@@ -9,6 +11,7 @@ from app.utils.logging_utils import configure_logging
 def main() -> int:
     configure_logging()
     application = QApplication(sys.argv)
+    application.setWindowIcon(QIcon(str(Path(__file__).parent / "assets" / "images" / "logo.png")))
 
     application.setStyleSheet("""
         QMainWindow {
@@ -28,12 +31,23 @@ def main() -> int:
         QListWidget#sidebar::item {
             color: #D8E2E8;
             padding: 10px 15px;
-            border-radius: 4px;
             margin: 2px 8px;
+        }
+        QListWidget#sidebar::item:disabled {
+            color: #6E889C;
+            font-size: 11px;
+            font-weight: bold;
+            padding-top: 15px;
+            padding-bottom: 5px;
+            margin-top: 10px;
         }
         QListWidget#sidebar::item:hover {
             background-color: #2E4E64;
             color: #FFFFFF;
+        }
+        QListWidget#sidebar::item:hover:disabled {
+            background-color: transparent;
+            color: #6E889C;
         }
         QListWidget#sidebar::item:selected {
             background-color: #168C8C;
@@ -107,6 +121,15 @@ def main() -> int:
         QLabel#local-banner-desc {
             color: #2E4E64;
             font-size: 12px;
+        }
+        QLabel#footer a {
+            color: #168C8C;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        QLabel#footer a:hover {
+            color: #1B9E9E;
+            text-decoration: underline;
         }
     """)
 

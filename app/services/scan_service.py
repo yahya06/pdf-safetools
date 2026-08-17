@@ -71,9 +71,7 @@ def calculate_sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def scan_pdf(
-    path: Path, severity_map: Mapping[str, Severity] | None = None
-) -> ScanResult:
+def scan_pdf(path: Path, severity_map: Mapping[str, Severity] | None = None) -> ScanResult:
     validate_pdf(path)
     severities = {**DEFAULT_SEVERITIES, **(severity_map or {})}
     counts = {finding_type: 0 for finding_type in DEFAULT_SEVERITIES}
@@ -89,16 +87,12 @@ def scan_pdf(
         risk_level=_risk_level(findings),
         sha256=calculate_sha256(path),
         status=(
-            "No configured findings detected"
-            if not findings
-            else "Configured findings detected"
+            "No configured findings detected" if not findings else "Configured findings detected"
         ),
     )
 
 
-def _scan_object(
-    value: Any, counts: dict[str, int], seen: set[tuple[int, int]]
-) -> None:
+def _scan_object(value: Any, counts: dict[str, int], seen: set[tuple[int, int]]) -> None:
     if not isinstance(value, (pikepdf.Dictionary, pikepdf.Array)):
         return
     objgen = value.objgen

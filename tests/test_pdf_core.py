@@ -42,9 +42,31 @@ def test_merge_split_and_delete(tmp_path: Path) -> None:
     assert get_pdf_info(trimmed).page_count == 2
 
 
+def test_transform_rotates_page_without_existing_rotation(tmp_path: Path) -> None:
+    source = _write_pdf(tmp_path / "source.pdf")
+    output = tmp_path / "rotated.pdf"
+    transform_pages(source, output, [0], {0: 90})
+    with fitz.open(output) as document:
+        assert document[0].rotation == 90
+
+
 def test_pdf_image_roundtrip(tmp_path: Path) -> None:
     source = _write_pdf(tmp_path / "source.pdf", 2)
     images = pdf_to_images(source, tmp_path / "images")
     output = tmp_path / "from_images.pdf"
     images_to_pdf(images, output)
     assert get_pdf_info(output).page_count == 2
+
+
+def test_validate_pdf_rejects_fake_signature(tmp_path: Path) -> None:
+    path = tmp_path / "fake.pdf"
+    path.write_bytes(b"%PDF-fake content but not real pdf structure here at all")
+    with pytest.raises(PdfValidationError):
+        validate_pdf(path)
+
+
+def test_validate_pdf_rejects_wrong_extension(tmp_path: Path) -> None:
+    path = tmp_path / "document.docx"
+    path.write_bytes(b"%PDF-1.4\nfake")
+    with pytest.raises(PdfValidationError):
+        validate_pdf(path)

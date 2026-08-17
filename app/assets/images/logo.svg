@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <rect width="256" height="256" rx="48" fill="#22394A"/>
+  <path d="M72 42h78l34 34v138H72z" fill="#FFFFFF"/>
+  <path d="M150 42v38h34" fill="#BFE3E3"/>
+  <path d="M150 42l34 38h-34z" fill="#168C8C"/>
+  <text x="128" y="154" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="52" font-weight="700" fill="#168C8C">PST</text>
+  <rect x="94" y="174" width="68" height="8" rx="4" fill="#D8E2E8"/>
+</svg>

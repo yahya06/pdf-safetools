@@ -87,7 +87,9 @@ def transform_pages(
             if rotation not in {0, 90, 180, 270}:
                 raise ValueError("Rotation must be 0, 90, 180, or 270 degrees.")
             if rotation:
-                page.Rotate = (int(page.Rotate) if page.Rotate else 0) + rotation
+                current = page.get("/Rotate")
+                current_rot = int(current) if current is not None else 0
+                page["/Rotate"] = (current_rot + rotation) % 360
             transformed.pages.append(page)
         transformed.save(output)
 
