@@ -22,8 +22,8 @@ from app.ui.organize_page import OrganizePage
 from app.ui.pdf_info_page import PdfInfoPage
 from app.ui.sanitize_page import SanitizePage
 from app.ui.scan_page import ScanPage
-from app.ui.settings_page import SettingsPage
 from app.ui.split_page import SplitPage
+from app.ui.update_page import UpdatePage
 
 
 class MainWindow(QMainWindow):
@@ -48,7 +48,7 @@ class MainWindow(QMainWindow):
             ScanPage(),
             SanitizePage(),
             BatchPage(),
-            SettingsPage(),
+            UpdatePage(),
             AboutPage(),
         ]
         for page in pages_list:
@@ -68,7 +68,7 @@ class MainWindow(QMainWindow):
             ("item", "  Sanitize PDF", 8),
             ("item", "  Batch", 9),
             ("header", "SYSTEM", -1),
-            ("item", "  Settings", 10),
+            ("item", "  Update", 10),
             ("item", "  About", 11),
         ]
 
